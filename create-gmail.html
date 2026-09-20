@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Gmail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-color: #0f172a; --card-bg: #1e293b; --text-color: #f8fafc; --sub-text: #94a3b8; --border-color: #334155; --accent-color: #10b981; --drawer-bg: #1e293b; }
+        [data-theme="light"] { --bg-color: #f8fafc; --card-bg: #ffffff; --text-color: #0f172a; --sub-text: #64748b; --border-color: #e2e8f0; --drawer-bg: #ffffff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); sticky: top; z-index: 100; }
+        .icon-btn { background: none; border: none; color: var(--text-color); font-size: 22px; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .icon-btn:hover { background-color: var(--border-color); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); opacity: 0; visibility: hidden; transition: 0.3s ease; z-index: 200; }
+        .overlay.active { opacity: 1; visibility: visible; }
+        .drawer { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background-color: var(--drawer-bg); transition: left 0.3s ease; z-index: 201; display: flex; flex-direction: column; }
+        .drawer.open { left: 0; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid var(--border-color); }
+        .drawer-header h3 { color: var(--accent-color); font-size: 18px; }
+        .nav-links { list-style: none; padding: 15px 0; display: flex; flex-direction: column; gap: 5px; }
+        .nav-links a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-color); text-decoration: none; font-weight: 500; font-size: 15px; }
+        .nav-links a:hover, .nav-links a.active { background-color: var(--accent-color); color: #fff; }
+        .main-content { flex: 1; padding: 30px 20px; max-width: 800px; margin: 0 auto; width: 100%; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="icon-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+        <h2 style="font-size: 20px; color: var(--accent-color);">Create Gmail</h2>
+        <button class="icon-btn" id="themeBtn"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
+    </header>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <h3>Menu Navigation</h3>
+            <button class="icon-btn" id="closeBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="graph-token.html"><i class="fa-solid fa-key"></i> Graph Token Generate</a></li>
+            <li><a href="gmail-token.html"><i class="fa-brands fa-google"></i> Gmail Token Generate</a></li>
+            <li><a href="create-outlook.html"><i class="fa-solid fa-user-plus"></i> Create Outlook</a></li>
+            <li><a href="create-gmail.html" class="active"><i class="fa-solid fa-envelope-open-text"></i> Create Gmail</a></li>
+            <li><a href="outlook-mail.html"><i class="fa-solid fa-envelope"></i> Outlook Mail</a></li>
+            <li><a href="gmail-mail.html"><i class="fa-solid fa-inbox"></i> Gmail Mail</a></li>
+        </ul>
+    </div>
+
+    <main class="main-content">
+        <div class="card">
+            <h3>Create Gmail Account</h3>
+            <p style="color: var(--sub-text); margin-top: 10px;">এখানে Gmail অ্যাকাউন্ট তৈরির অপশনগুলো যুক্ত করুন।</p>
+        </div>
+    </main>
+
+    <script>
+        const menuBtn = document.getElementById('menuBtn'), closeBtn = document.getElementById('closeBtn'), overlay = document.getElementById('overlay'), drawer = document.getElementById('drawer'), themeBtn = document.getElementById('themeBtn'), themeIcon = document.getElementById('themeIcon');
+        menuBtn.addEventListener('click', () => { drawer.classList.add('open'); overlay.classList.add('active'); });
+        closeBtn.addEventListener('click', () => { drawer.classList.remove('open'); overlay.classList.remove('active'); });
+        overlay.addEventListener('click', () => { drawer.classList.remove('open'); overlay.classList.remove('active'); });
+
+        if (localStorage.getItem('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); themeIcon.classList.replace('fa-moon', 'fa-sun'); }
+        themeBtn.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'light') { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); themeIcon.classList.replace('fa-sun', 'fa-moon'); }
+            else { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); themeIcon.classList.replace('fa-moon', 'fa-sun'); }
+        });
+    </script>
+</body>
+</html>
