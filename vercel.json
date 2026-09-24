@@ -4,9 +4,25 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "api/gmail.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
+    {
+      "src": "/gmail-token.html",
+      "dest": "api/gmail.py"
+    },
+    {
+      "src": "/start-gmail-bulk",
+      "dest": "api/gmail.py"
+    },
+    {
+      "src": "/gmail-callback",
+      "dest": "api/gmail.py"
+    },
     {
       "src": "/(.*)",
       "dest": "api/index.py"
