@@ -6,11 +6,11 @@
     <title>Gmail Token Generate</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-color: #0f172a; --card-bg: #1e293b; --text-color: #f8fafc; --sub-text: #94a3b8; --border-color: #334155; --accent-color: #10b981; --drawer-bg: #1e293b; }
+        :root { --bg-color: #0f172a; --card-bg: #1e293b; --text-color: #f8fafc; --sub-text: #94a3b8; --border-color: #334155; --accent-color: #ea4335; --drawer-bg: #1e293b; }
         [data-theme="light"] { --bg-color: #f8fafc; --card-bg: #ffffff; --text-color: #0f172a; --sub-text: #64748b; --border-color: #e2e8f0; --drawer-bg: #ffffff; }
         * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); sticky: top; z-index: 100; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
         .icon-btn { background: none; border: none; color: var(--text-color); font-size: 22px; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .icon-btn:hover { background-color: var(--border-color); }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); opacity: 0; visibility: hidden; transition: 0.3s ease; z-index: 200; }
@@ -23,7 +23,18 @@
         .nav-links a { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-color); text-decoration: none; font-weight: 500; font-size: 15px; }
         .nav-links a:hover, .nav-links a.active { background-color: var(--accent-color); color: #fff; }
         .main-content { flex: 1; padding: 30px 20px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        label { font-size: 13px; font-weight: bold; color: var(--sub-text); display: block; margin-bottom: 8px; text-transform: uppercase; }
+        textarea { width: 100%; height: 160px; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; font-size: 13px; resize: vertical; background: var(--bg-color); color: #38bdf8; font-family: monospace; line-height: 1.5; margin-bottom: 15px; }
+        textarea:focus { outline: none; border-color: var(--accent-color); }
+        .action-btn { width: 100%; background-color: var(--accent-color); color: white; border: none; padding: 14px; font-size: 16px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .action-btn:hover { opacity: 0.9; }
+        .result-box { margin-top: 20px; background: var(--bg-color); border-radius: 10px; padding: 15px; border: 1px solid var(--border-color); max-height: 250px; overflow-y: auto; }
+        .log-entry { font-family: monospace; font-size: 12px; margin-bottom: 8px; word-break: break-all; padding: 8px; border-radius: 6px; background: var(--card-bg); }
+        .success { color: #4ade80; border-left: 4px solid #4ade80; }
+        .failed { color: #f87171; border-left: 4px solid #f87171; }
+        .queue-badge { background: #334155; padding: 4px 10px; border-radius: 6px; font-size: 12px; color: #38bdf8; margin-bottom: 10px; display: inline-block; }
     </style>
 </head>
 <body>
@@ -52,8 +63,37 @@
 
     <main class="main-content">
         <div class="card">
-            <h3>Gmail Token Generation Area</h3>
-            <p style="color: var(--sub-text); margin-top: 10px;">এখানে Gmail Token জেনারেট করার লজিক যুক্ত করুন।</p>
+            <h3>Gmail Bulk Redirect Generator</h3>
+            <p style="color: var(--sub-text); margin-top: 5px; margin-bottom: 20px; font-size: 14px;">
+                এখানে যত ইচ্ছা অ্যাকাউন্ট (প্রতি লাইনে <code style="color:var(--accent-color);">email|password</code>) দিন। একের পর এক সাইন-ইন হয়ে স্বয়ংক্রিয়ভাবে Firebase-এ সেভ হবে।
+            </p>
+
+            {% if remaining_count is defined and remaining_count > 0 %}
+                <div class="queue-badge"><i class="fa-solid fa-spinner fa-spin"></i> বাকি আছে: {{ remaining_count }} টি অ্যাকাউন্ট</div>
+            {% endif %}
+
+            <form action="/start-gmail-bulk" method="POST">
+                <label>Accounts Input List:</label>
+                <textarea name="bulk_accounts" placeholder="test1@gmail.com|pass123&#10;test2@gmail.com|pass456" required></textarea>
+                
+                <button type="submit" class="action-btn">
+                    <i class="fa-brands fa-google"></i> START BULK PROCESS
+                </button>
+            </form>
+
+            {% if status %}
+            <div class="result-box">
+                <label>Execution Status:</label>
+                {% if status == 'success' %}
+                    <div class="log-entry success">
+                        ✅ [SUCCESS] {{ msg }}<br>
+                        {% if saved_text %}<small style="color: var(--sub-text);">Saved: {{ saved_text }}</small>{% endif %}
+                    </div>
+                {% else %}
+                    <div class="log-entry failed">❌ [FAILED] {{ msg }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </main>
 
@@ -69,6 +109,13 @@
             if (theme === 'light') { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); themeIcon.classList.replace('fa-sun', 'fa-moon'); }
             else { document.documentElement.setAttribute('data-theme', 'light'); localStorage.setItem('theme', 'light'); themeIcon.classList.replace('fa-moon', 'fa-sun'); }
         });
+
+        // Auto-Redirect trigger logic for Queue loop
+        {% if next_redirect %}
+            setTimeout(() => {
+                window.location.href = "{{ next_redirect|safe }}";
+            }, 1500);
+        {% endif %}
     </script>
 </body>
-</html>
+                        </html>
